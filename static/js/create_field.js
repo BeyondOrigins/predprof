@@ -1,13 +1,13 @@
 let modes = ["normal", "add-ship", "select-ship", "ship-ready", "add-prize"];
 let elems = [];
-let prizes = { 1000: "promo1000", 2000: "promo2000", 3000: "promo3000"};
+let prizes = { 1000: "promo1000", 2000: "promo2000", 3000: "promo3000" };
 let selected;
 
 window.onload = () => {
     localStorage.setItem("data-mode", "normal");
     localStorage.setItem("cells", JSON.stringify([]));
     localStorage.setItem("prizes", JSON.stringify([]));
-    localStorage.setItem("users", JSON.stringify([]));
+    localStorage.setItem("users", JSON.stringify({}));
     localStorage.setItem("x", "");
     localStorage.setItem("y", "");
 };
@@ -43,6 +43,7 @@ function onFieldCreation() {
     let cells = JSON.parse(localStorage.getItem("cells"));
     let prizes = JSON.parse(localStorage.getItem("prizes"));
     let size = Number(document.getElementById("select-size").value);
+    let users = JSON.parse(localStorage.getItem("users"));
     if (cells.length && prizes.length && size) {
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "/create_field", true);
@@ -50,7 +51,8 @@ function onFieldCreation() {
         let body = JSON.stringify({
             "size": size,
             "cells": cells,
-            "prizes": prizes
+            "prizes": prizes,
+            "users" : users
         });
         xhr.onreadystatechange = () => {
             if (xhr.readyState != 4 && xhr.status != 200) { // if there is an error
@@ -64,6 +66,66 @@ function onFieldCreation() {
     }
     else {
         alert("Добавьте хотя бы один корабль!");
+    }
+}
+
+function onAddUserButtonClick() {
+    let window = document.querySelector("#exampleModalToggle");
+    window.classList.add("show");
+    window.style = "display: block; padding-right: 15px;";
+    window.ariaModal = true;
+    window.role = "dialog";
+    let background = document.createElement("div");
+    background.id = "bkg-fade";
+    background.classList.add("modal-backdrop", "fade", "show");
+    document.body.appendChild(background);
+    document.body.style = "background-color: rgb(39, 42, 49); overflow: hidden;"
+    document.querySelector(".btn-close").onclick = function () {
+        window.classList.remove("show");
+        window.style = "display: none;";
+        window.style.paddingRight = "";
+        window.ariaModal = false;
+        window.role = "";
+        document.getElementById("bkg-fade").remove();
+        document.body.style = "background-color:#272A31";
+    }
+}
+
+function addUser() {
+    let id = document.getElementsByName("user-id")[0].value;
+    let shots = document.getElementsByName("shots")[0].value;
+    if (isNaN(id) || isNaN(shots)) {
+        document.querySelector("#error").innerHTML = "ID и количество выстрелов должны быть целыми числами";
+    }
+    else {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "/check_user", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        let body = JSON.stringify({ "id": Number(id) });
+        let error = document.querySelector("#error");
+        xhr.onreadystatechange = () => {
+            if (xhr.status != 200 && xhr.readyState != 4) {
+                error.innerHTML = JSON.parse(xhr.responseText)["message"];
+                error.style.color = "var(--text-error-color)";
+            }
+            else if (xhr.status == 200 && xhr.readyState == 4) {
+                document.getElementsByName("user-id")[0].value = "";
+                document.getElementsByName("shots")[0].value = "";
+                if (!JSON.parse(xhr.responseText)["status"]) {
+                    let users = JSON.parse(localStorage.getItem("users"));
+                    users[id] = Number(shots);
+                    localStorage.setItem("users", JSON.stringify(users));
+                    error.style.color = "var(--text-success-color)";
+                    error.innerHTML = "Пользоваель успешно добавлен";
+                    console.log(JSON.parse(localStorage.getItem("users")));
+                }
+                else {
+                    error.style.color = "var(--text-error-color)";
+                    error.innerHTML = "Вы не можете добавлять администратора на поле";
+                }
+            }
+        };
+        xhr.send(body);
     }
 }
 
@@ -153,7 +215,9 @@ function getMode() { // get edition mode
 }
 
 function onCreateButtonClick() {
-    setMode("add-ship");
+    if (document.querySelector("#select-size").value != 0) {
+        setMode("add-ship");
+    }
 }
 
 function onOptionChange(el) {

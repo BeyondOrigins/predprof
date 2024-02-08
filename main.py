@@ -31,6 +31,14 @@ def admin_only(f):
         return redirect("/")
     return decorated_function
 
+def user_only(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not is_admin(): 
+            return f(*args, *kwargs)
+        return redirect("/")
+    return decorated_function
+
 @login_manager.user_loader
 def load_user(user_id : int):
     return UserLogin().fromDB(user_id, User)
@@ -73,11 +81,6 @@ def auth():
         return jsonify({"message" : "Неверный логин или пароль"}), 401
     except:
         return jsonify({"message" : "Неверный логин или пароль"}), 401
-
-@app.route("/field_select", methods=["GET"])
-@login_required
-def select_field():
-    return render_template("select_field.html")
 
 @app.route("/game/<int:field_id>", methods=["GET"]) # game page
 @login_required
@@ -142,6 +145,7 @@ def create_field_page():
 def create_field():
     try:
         data = request.get_json()
+        print(data)
         ships_data = data.get("cells")
         prizes_data = data.get("prizes")
         size = int(data.get("size"))
@@ -184,14 +188,42 @@ def create_field():
         for ship in ships_data: # set ship_id for cells
             for cell in ship:
                 cells[int(cell.get("y"))][int(cell.get("x"))].ship_id = ships[ships_data.index(ship)].id
+        field.users = json.dumps(data.get("users"))
         db.session.commit()
         return jsonify({"message" : "ok"}), 200
     except:
         return jsonify({"message" : "error"}), 400
 
+@app.route("/check_user", methods=["POST"])
+@login_required
+@admin_only
+def check_user():
+    data = request.get_json()
+    user_id = data.get("id")
+    try:
+        user = User.query.get(int(user_id))
+        return jsonify({"status" : user.is_admin}), 200
+    except:
+        return jsonify({"message" : "Пользователя с таким id не существует!"}), 406
+
+@app.route("/fields", methods=["GET"])
+@login_required
+def fields_page():
+    fields_all = Field.query.all()
+    fields = []
+    if User.query.get(current_user.get_id()).is_admin:
+        fields = fields_all
+    else:
+        for field in fields_all:
+            if current_user.get_id() in json.loads(field.users):
+                fields.append(field)
+    return render_template("fields.html", fields=fields)
+
 @app.route("/prizes", methods=["GET"])
 @login_required
+@user_only
 def prizes():
+    prizes_all = Prize.query.all()
     return render_template("prizes.html")
 
 @app.errorhandler(401)

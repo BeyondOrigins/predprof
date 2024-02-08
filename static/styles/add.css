@@ -7,6 +7,8 @@
     --btn-cancel-fg-color: #202020;
     --cell-empty: #dfdfdf;
     --cell-ship: #ff3b3b;
+    --text-error-color: #dd3939;
+    --text-success-color: #39c939;
 }
 
 [data-mode="add-ship"] {
