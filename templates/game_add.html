@@ -34,7 +34,7 @@
         Sea battle: классическая игра для 2х игроков
     </h1>
     <div class="row px-5">
-        <div class="col">
+        <div class="column">
             <select class="form-select" aria-label="Пример выбора по умолчанию" onchange="onOptionChange(this)"
                 id="select-size">
                 <option selected value="0">Размер поля</option>
@@ -48,8 +48,8 @@
                 <option value="12">12х12</option>
             </select>
         </div>
-        <div class="col">
-            <input type="text" class="form-control" placeholder="Кол-во выстрелов" aria-label="Кол-во выстрелов">
+        <div class="column">
+            <button data-bs-toggle="modal" data-bs-target="#exampleModalToggle" class="button-start">Добавить пользователя</button>
         </div>
         <div class="button-container">
             <button class="button-start" onclick="onCreateButtonClick()" id="add-ship">Добавить корабль</button>

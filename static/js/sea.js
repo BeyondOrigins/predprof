@@ -7,6 +7,7 @@ function onShot(el) {
         "cell_id": id
     });
     xhr.onreadystatechange = () => {
+        console.log(xhr.responseText);
         let resp = JSON.parse(xhr.responseText);
         if (xhr.status != 200 && xhr.readyState != 4) {
             let window = document.querySelector("#exampleModalToggle3");
@@ -22,7 +23,6 @@ function onShot(el) {
             document.querySelector("#error-label").innerHTML = resp["message"];
         }
         else if (xhr.status == 200 && xhr.readyState == 4) {
-            console.log(resp);
             if (resp["status"] == 0) {
                 el.style.backgroundColor = "var(--cell-empty)";
             }

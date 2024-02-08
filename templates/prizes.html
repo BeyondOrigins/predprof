@@ -25,7 +25,7 @@
     <div class="block"></div>
     <div class="fone"></div>
     <div class="info-container">
-        <!--<div class="text">
+        <div class="text">
             <h1>
                 Ваши призы
             </h1>
@@ -33,11 +33,19 @@
         <h4 class="text1">
             Вы уже выиграли несколько призов в нашей игре – посмотрите их и узнайте как ими воспользоваться для покупок
             в нашем интернет-магазине!
-        </h4>-->
-
-        <!-- <div class="qa">
+        </h4>
+        {% if prizes|length == 0 %}
+        <h4 class="text1">
+            К сожалению, вы ещё не выиграли ни одного приза :(
+        </h4>
+        {% else %}
+        {% for prize in prizes %}
+        
+        {% endfor %}
+        {% endif %}
+        <div class="qa">
             <img src="{{url_for('static', filename='styles/images/q.jpg')}}" class="image">
-        </div> -->
+        </div>
     </div>
 </body>
 

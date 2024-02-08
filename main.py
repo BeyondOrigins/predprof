@@ -107,7 +107,7 @@ def game_post():
     field = Field.query.get(cell.field_id)
     users_data = json.loads(field.users)
     if is_admin(): 
-        return jsonify({"message" : "Админ не может участвовать в игре!"}), 406
+        return jsonify({"message" : "Администратор не может участвовать в игре!"}), 406
     if users_data.get(user_id) == 0:
         return jsonify({"message" : "У вас нет выстрелов!"}), 406
     if cell.shot_by != 0:

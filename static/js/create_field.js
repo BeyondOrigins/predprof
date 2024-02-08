@@ -7,6 +7,7 @@ window.onload = () => {
     localStorage.setItem("data-mode", "normal");
     localStorage.setItem("cells", JSON.stringify([]));
     localStorage.setItem("prizes", JSON.stringify([]));
+    localStorage.setItem("users", JSON.stringify([]));
     localStorage.setItem("x", "");
     localStorage.setItem("y", "");
 };
@@ -177,7 +178,7 @@ function onOptionChange(el) {
                 let mode = getMode();
                 if (mode == "add-ship" && elem.getAttribute("occupied") != "true") { // select a start ship cell
                     elem.style = "background-color: var(--cell-ship)";
-                    let button = document.querySelector(".button-start");
+                    let button = document.querySelector("#add-ship");
                     button.classList.add("disabled");
                     button.disabled = true;
                     localStorage.setItem("x", elem.getAttribute("x")); // x of selected cell

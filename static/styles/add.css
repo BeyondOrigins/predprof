@@ -225,3 +225,8 @@ figure {
 .modal {
     width: 100%;
 }
+
+.column {
+    flex: 1 0 0%;
+    text-align: center;
+}
