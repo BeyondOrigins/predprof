@@ -1,0 +1,1 @@
+import { prizes } from "./config.js"

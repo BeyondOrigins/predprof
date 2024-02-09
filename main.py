@@ -194,6 +194,93 @@ def create_field():
     except:
         return jsonify({"message" : "error"}), 400
 
+@app.route("/edit_field/<int:id>", methods=["GET"])
+@login_required
+@admin_only
+def edit_field_page(field_id):
+    field = Field.query.get(field_id)
+    cells_data = Cell.query.filter_by(field_id=field.id)
+    cells = [[None for j in range(field.size)] for i in range(field.size)]
+    for cell in cells_data:
+        if cell.shot_by != 0:
+            return redirect("/fields")
+        cells[cell.y][cell.x] = cell.__dict__
+    return render_template("edit_field.html", cells=cells)
+
+@app.route("/edit_field", methods=["POST"])
+@login_required
+@admin_only
+def edit_field():
+    try:
+        data = request.get_json()
+        ships_data = data.get("cells")
+        prizes_data = data.get("prizes")
+        size = int(data.get("size"))
+        field = Field.query.get(data.get("id"))
+        cells = Cell.query.filter_by(field_id=field.id)
+        ships = Ship.query.filter_by(field_id=field.id)
+        prizes = Prize.query.filter_by(field_id=field.id)
+        for ship in ships:
+            db.session.delete(ship)
+        for prize in prizes:
+            db.session.delete(prize)
+        for cell in cells:
+            db.session.delete(cell)
+        db.session.commit()
+        ships = []
+        prizes = []
+        cells = []
+        for y in range(size): # create cells
+            row = []
+            for x in range(size):
+                row.append(Cell(
+                    field_id=field.id,
+                    x=x,
+                    y=y,
+                    ship_id=0,
+                    shot_by=0
+                ))
+                db.session.add(row[-1])
+            cells.append(row)
+        for i in range(len(ships_data)): # create ships and prizes
+            prize = Prize(
+                name=PRIZES_INFO[prizes_data[i]]["name"],
+                desc=PRIZES_INFO[prizes_data[i]]["desc"],
+                type=prizes_data[i],
+                got_by=0
+            )
+            db.session.add(prize)
+            db.session.commit()
+            ship = Ship(
+                field_id=field.id,
+                prize_id=prize.id
+            )
+            ships.append(ship)
+            db.session.add(ship)
+            db.session.commit()
+        for ship in ships_data: # set ship_id for cells
+            for cell in ship:
+                cells[int(cell.get("y"))][int(cell.get("x"))].ship_id = ships[ships_data.index(ship)].id
+        field.users = json.dumps(data.get("users"))
+        db.session.commit()
+        return jsonify({"message" : "ok"}), 200
+    except:
+        return jsonify({"message" : "error"}), 400
+
+
+@app.route("/delete_field", methods=["DELETE"])
+@login_required
+@admin_only
+def delete_field():
+    field = Field.query.get(request.get_json().get("id"))
+    cells = Cell.query.filter_by(field_id=field.id)
+    if not any(not cell.shot_by for cell in cells):
+        return jsonify({"message" : "Редактирование поля запрещено."}), 406
+    else:
+        db.session.delete(field)
+        db.session.commit()
+        return jsonify({"message" : "ok"}), 200
+
 @app.route("/check_user", methods=["POST"])
 @login_required
 @admin_only
@@ -216,7 +303,7 @@ def fields_page():
     else:
         for field in fields_all:
             if current_user.get_id() in json.loads(field.users):
-                fields.append(field)
+                fields.append(field.__dict__)
     return render_template("fields.html", fields=fields)
 
 @app.route("/prizes", methods=["GET"])
@@ -224,7 +311,11 @@ def fields_page():
 @user_only
 def prizes():
     prizes_all = Prize.query.all()
-    return render_template("prizes.html")
+    prizes = []
+    for prize in prizes_all:
+        if prize.got_by == current_user.get_id():
+            prizes.append(prize.__dict__)
+    return render_template("prizes.html", prizes=prizes)
 
 @app.errorhandler(401)
 def auth_error(error):

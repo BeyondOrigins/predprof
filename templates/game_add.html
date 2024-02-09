@@ -86,8 +86,26 @@
             </div>
         </div>
     </div>
-    <div class="fone">
+    <div class="modal fade" id="exampleModalToggle" aria-labelledby="exampleModalToggleLabel" tabindex="-1"
+        style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Призы</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
 
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">ID пользователя</label>
+                        <input type="text" class="form-control" id="recipient-name" name="user-id">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fone">
         <table class="field">
         </table>
     </div>
@@ -95,9 +113,9 @@
         <select class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
             disabled id="prize-select" onchange="selectPrize(this)">
             <option class="dropdown-item" value="0">Добавить приз</option>
-            <option class="dropdown-item" value="1000">Приз "1000" рублей</option>
-            <option class="dropdown-item" value="2000">Приз "2000" рублей</option>
-            <option class="dropdown-item" value="3000">Приз "3000" рублей</option>
+            <option class="dropdown-item" value="promo1000">Приз "1000" рублей</option>
+            <option class="dropdown-item" value="promo2000">Приз "2000" рублей</option>
+            <option class="dropdown-item" value="promo3000">Приз "3000" рублей</option>
         </select>
     </div>
 

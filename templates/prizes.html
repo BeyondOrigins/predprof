@@ -39,9 +39,11 @@
             К сожалению, вы ещё не выиграли ни одного приза :(
         </h4>
         {% else %}
-        {% for prize in prizes %}
-        
-        {% endfor %}
+        <table class="prizes">
+            {% for prize in prizes %}
+            
+            {% endfor %}
+        </table>
         {% endif %}
         <div class="qa">
             <img src="{{url_for('static', filename='styles/images/q.jpg')}}" class="image">

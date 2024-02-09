@@ -1,6 +1,5 @@
-let modes = ["normal", "add-ship", "select-ship", "ship-ready", "add-prize"];
+import { modes, prizes } from "./config.js"
 let elems = [];
-let prizes = { 1000: "promo1000", 2000: "promo2000", 3000: "promo3000" };
 let selected;
 
 window.onload = () => {
@@ -52,7 +51,7 @@ function onFieldCreation() {
             "size": size,
             "cells": cells,
             "prizes": prizes,
-            "users" : users
+            "users": users
         });
         xhr.onreadystatechange = () => {
             if (xhr.readyState != 4 && xhr.status != 200) { // if there is an error
@@ -89,6 +88,11 @@ function onAddUserButtonClick() {
         document.getElementById("bkg-fade").remove();
         document.body.style = "background-color:#272A31";
     }
+}
+
+function showPrizes() {
+    let prizes = JSON.parse(localStorage.getItem("prizes"));
+    
 }
 
 function addUser() {
@@ -133,14 +137,14 @@ function selectPrize(el) { // assign prize to ship
     let value = el.value;
     if (getMode() == "add-prize" && value != "0") {
         let prize = document.createElement("div");
-        let image_path = "/static/styles/images/" + prizes[el.value] + ".png";
+        let image_path = "/static/styles/images/" + value + ".png";
         let img = new Image(39, 39);
         img.src = image_path;
         prize.appendChild(img);
         prize.setAttribute("type", value);
         selected.appendChild(prize);
         let prizes_arr = JSON.parse(localStorage.getItem("prizes"));
-        prizes_arr.push(prizes[el.value]);
+        prizes_arr.push(value);
         localStorage.setItem("prizes", JSON.stringify(prizes_arr));
         setMode("normal");
         el.value = "0";
