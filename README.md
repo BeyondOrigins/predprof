@@ -5,9 +5,11 @@
 1. Предварительно установить интерпритатор Python и все необходимые библиотеки (см. документацию)
 2. Зайти в папку, в которую вы хотите установить продукт
 3. В терминале по данному пути прописать:
-> git clone "https://github.com/BeyondOrigins/predprof"
-> cd predprof
-> py main.py
+''' bash
+git clone "https://github.com/BeyondOrigins/predprof"
+cd predprof
+py main.py
+'''
 4. Сайт запущен по адресу 127.0.0.1:5000
 ## Схема организации данных
 ![Схема организации данных](/images/db.jpg)
