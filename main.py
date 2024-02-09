@@ -145,7 +145,6 @@ def create_field_page():
 def create_field():
     try:
         data = request.get_json()
-        print(data)
         ships_data = data.get("cells")
         prizes_data = data.get("prizes")
         size = int(data.get("size"))
@@ -198,7 +197,7 @@ def create_field():
 @login_required
 @admin_only
 def edit_field_page(field_id):
-    field = Field.query.get(int(field_id))
+    field = Field.query.get(field_id)
     cells_data = Cell.query.filter_by(field_id=field.id)
     cells = [[None for j in range(field.size)] for i in range(field.size)]
     for cell in cells_data:
