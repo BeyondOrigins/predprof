@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru" data-mode="normal">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{url_for('static', filename='styles/bootstrap.css')}}" rel="stylesheet">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
+    <link rel="stylesheet" href="{{url_for('static', filename='styles/add.css')}}">
+    <title>Sea battle</title>
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{url_for('static', filename='styles/icon/apple-touch-icon.png')}}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{url_for('static', filename='styles/icon/favicon-32x32.png')}}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{url_for('static', filename='styles/icon/favicon-16x16.png')}}">
+    <link rel="manifest" href="{{url_for('static', filename='styles/site.webmanifest')}}">
+    <link rel="mask-icon" href="{{url_for('static', filename='styles/icon/safari-pinned-tab.svg')}}" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<body style="background-color:#272A31">
+    <main class="f_img">
+        <figure>
+        </figure>
+        <div class="round_icon">
+            <img src="{{url_for('static', filename='styles/images/icon1_round.jpg')}}">
+        </div>
+    </main>
+
+    <h1 class="sea">
+        Sea battle: классическая игра для 2х игроков
+    </h1>
+    <div class="row px-5">
+        <div class="column">
+            <button data-bs-toggle="modal" data-bs-target="#exampleModalToggle" class="button-start"
+                onclick="onAddUserButtonClick()">Добавить пользователя</button>
+        </div>
+        <div class="button-container">
+            <button class="button-start" onclick="onCreateButtonClick()" id="add-ship">Добавить корабль</button>
+            <button class="button-cancel disabled" onclick="cancelAddition()" id="cancel-button"
+                disabled>Отмена</button>
+            <button class="button-confirm" onclick="onFieldCreation()" id="confirm">Готово</button>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModalToggle" aria-labelledby="exampleModalToggleLabel" tabindex="-1"
+        style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Добавить пользователя на поле</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">ID пользователя</label>
+                        <input type="text" class="form-control" id="recipient-name" name="user-id">
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Количество выстрелов</label>
+                        <input type="text" class="form-control" id="recipient-name" name="shots">
+                    </div>
+                    <div class="mb-3">
+                        <label class="col-form-label" id="error"></label>
+                    </div>
+                    <div class="modal-footer">
+                        <a type="button" class="btn btn-warning" data-bs-target="#exampleModalToggle3"
+                            onclick="addUser()">Добавить</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModalToggle" aria-labelledby="exampleModalToggleLabel" tabindex="-1"
+        style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Призы</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">ID пользователя</label>
+                        <input type="text" class="form-control" id="recipient-name" name="user-id">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fone">
+        <table class="field">
+            {% for row in field %}
+            <tr class="field__row">
+                {% for cell in row %}
+                {% for cell in row %}
+                {% if cell["shot_by"] == 0 %}
+                <td class="cell" x="{{cell['x']}}" y="{{cell['y']}}">
+                </td>
+                {% else %}
+                {% if cell["ship_id"] == 0 %}
+                <td class="cell" x="{{cell['x']}}" y="{{cell['y']}}" style="background-color: var(--cell-empty);">
+                </td>
+                {% else %}
+                <td class="cell" x="{{cell['x']}}" y="{{cell['y']}}" style="background-color: var(--cell-ship);">
+                </td>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="info-container">
+        <select class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+            disabled id="prize-select" onchange="selectPrize(this)">
+            <option class="dropdown-item" value="0">Добавить приз</option>
+            <option class="dropdown-item" value="promo1000">Приз "1000" рублей</option>
+            <option class="dropdown-item" value="promo2000">Приз "2000" рублей</option>
+            <option class="dropdown-item" value="promo3000">Приз "3000" рублей</option>
+        </select>
+    </div>
+
+    <script src="{{url_for('static', filename='js/create_field.js')}}"></script>
+</body>
+
+</html>

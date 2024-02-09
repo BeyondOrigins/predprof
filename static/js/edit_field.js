@@ -1,5 +1,4 @@
-let prizes = { "promo1000": 1000, "promo2000": 2000, "promo3000": 3000 };
-let modes = ["normal", "add-ship", "select-ship", "ship-ready", "add-prize"];
+import { modes, prizes } from "./config.js"
 let elems = [];
 let selected;
 
@@ -10,6 +9,118 @@ window.onload = () => {
     localStorage.setItem("users", JSON.stringify({}));
     localStorage.setItem("x", "");
     localStorage.setItem("y", "");
+    Array.prototype.forEach.call(document.getElementsByClassName("cell"), (elem) => {
+        elem.addEventListener("click", () => { // on cell click
+            let mode = getMode();
+            if (mode == "add-ship" && elem.getAttribute("occupied") != "true") { // select a start ship cell
+                elem.style = "background-color: var(--cell-ship)";
+                let button = document.querySelector("#add-ship");
+                button.classList.add("disabled");
+                button.disabled = true;
+                localStorage.setItem("x", elem.getAttribute("x")); // x of selected cell
+                localStorage.setItem("y", elem.getAttribute("y")); // y of selected cell
+                setMode("select-ship");
+                selected = elem;
+            }
+            else if (mode == "select-ship" && elem.getAttribute("occupied") != "true") { // confirm ship
+                let cells_arr = JSON.parse(localStorage.getItem("cells"));
+                let cells = [];
+                elems.push(selected);
+                elems.forEach((e) => {
+                    cells.push({
+                        "x": e.getAttribute("x"),
+                        "y": e.getAttribute("y")
+                    });
+                });
+                markCells(elems, false, true);
+                cells_arr.push(cells);
+                localStorage.setItem("cells", JSON.stringify(cells_arr));
+                document.querySelector("#prize-select").disabled = false;
+                setMode("add-prize");
+            }
+            else if (mode == "normal" && elem.getAttribute("occupied") == "true") { // delete ship
+                let cells_arr = JSON.parse(localStorage.getItem("cells"));
+                let cells = [], index;
+                let cells_obj = [];
+                find:
+                for (let i = 0; i < cells_arr.length; ++i) {
+                    for (let j = 0; j < cells_arr[i].length; ++j) {
+                        if (cells_arr[i][j]["x"] == elem.getAttribute("x") && cells_arr[i][j]["y"] == elem.getAttribute("y")) {
+                            cells = cells_arr[i];
+                            index = i;
+                            break find;
+                        }
+                    }
+                }
+                cells_arr.splice(index, 1);
+                let new_prizes = JSON.parse(localStorage.getItem("prizes"));
+                new_prizes.splice(index, 1);
+                localStorage.setItem("prizes", JSON.stringify(new_prizes));
+                localStorage.setItem("cells", JSON.stringify(cells_arr));
+                cells.forEach((e) => {
+                    let obj = getCellByCoord(e["x"], e["y"]);
+                    cells_obj.push(obj);
+                    obj.innerHTML = "";
+                    obj.style = "background-color: var(--cell-empty)";
+                });
+                markCells(cells_obj, false, false);
+            }
+        });
+        elem.addEventListener("mouseover", () => {
+            let selectedX = Number(localStorage.getItem("x"));
+            let hoverX = Number(elem.getAttribute("x"));
+            let selectedY = Number(localStorage.getItem("y"));
+            let hoverY = Number(elem.getAttribute("y"));
+            if (getMode() == "select-ship" && elem.getAttribute("occupied") != "true") { // if a cell was selected
+                elems.forEach((e) => {
+                    if ((e.getAttribute("x") != selectedX || e.getAttribute("y") != selectedY) && e.getAttribute("occupied") != "true") {
+                        e.style = "background-color: var(--cell-empty)";
+                        e.setAttribute("selected", false);
+                    }
+                });
+                elems = [];
+                if (hoverY == selectedY) {
+                    let children = elem.parentElement.children;
+                    for (let i = 0; i < children.length; ++i) {
+                        let e = children[i];
+                        let thisX = Number(e.getAttribute("x"));
+                        if ((thisX > hoverX && thisX < selectedX || thisX < hoverX && thisX > selectedX) && Math.abs(selectedX - thisX) <= 3) {
+                            elems.push(e);
+                            if (e.getAttribute("occupied") == "true") {
+                                elems = [];
+                                break;
+                            }
+                        }
+                    }
+                    if (Math.abs(selectedX - hoverX) <= 3) {
+                        elems.push(elem);
+                    }
+                }
+                else if (hoverX == selectedX) {
+                    let children = document.getElementsByClassName("cell");
+                    for (let i = 0; i < children.length; ++i) {
+                        let e = children[i];
+                        let thisX = Number(e.getAttribute("x"));
+                        let thisY = Number(e.getAttribute("y"));
+                        if (thisX == hoverX && (thisY > hoverY && thisY < selectedY || thisY < hoverY && thisY > selectedY) && Math.abs(selectedY - thisY) <= 3) {
+                            elems.push(e);
+                            if (e.getAttribute("occupied") == "true") {
+                                elems = [];
+                                break;
+                            }
+                        }
+                    }
+                    if (Math.abs(selectedY - hoverY) <= 3) {
+                        elems.push(elem);
+                    }
+                }
+                elems.forEach((el) => {
+                    el.setAttribute("selected", true);
+                    el.style = "background-color: var(--cell-ship)";
+                });
+            }
+        });
+    });
 };
 
 function setMode(mode) { // change edition mode
@@ -222,139 +333,5 @@ function getMode() { // get edition mode
 function onCreateButtonClick() {
     if (document.querySelector("#select-size").value != 0) {
         setMode("add-ship");
-    }
-}
-
-function onOptionChange(el) {
-    localStorage.setItem("cells", JSON.stringify([]));
-    elems = [];
-    let size = el.value;
-    setMode("normal");
-    document.querySelector("#add-ship").classList.remove("disabled");
-    document.querySelector("#add-ship").disabled = false;
-    document.querySelector("#prize-select").disabled = true;
-    let field = document.querySelector(".field");
-    field.innerHTML = "";
-    for (let i = 0; i < size; ++i) {
-        let row = document.createElement("tr");
-        row.classList.add("field__row");
-        for (let j = 0; j < size; ++j) {
-            let elem = document.createElement("td");
-            elem.classList.add("cell");
-            elem.setAttribute("x", j);
-            elem.setAttribute("y", i);
-            elem.addEventListener("click", () => { // on cell click
-                let mode = getMode();
-                if (mode == "add-ship" && elem.getAttribute("occupied") != "true") { // select a start ship cell
-                    elem.style = "background-color: var(--cell-ship)";
-                    let button = document.querySelector("#add-ship");
-                    button.classList.add("disabled");
-                    button.disabled = true;
-                    localStorage.setItem("x", elem.getAttribute("x")); // x of selected cell
-                    localStorage.setItem("y", elem.getAttribute("y")); // y of selected cell
-                    setMode("select-ship");
-                    selected = elem;
-                }
-                else if (mode == "select-ship" && elem.getAttribute("occupied") != "true") { // confirm ship
-                    let cells_arr = JSON.parse(localStorage.getItem("cells"));
-                    let cells = [];
-                    elems.push(selected);
-                    elems.forEach((e) => {
-                        cells.push({
-                            "x": e.getAttribute("x"),
-                            "y": e.getAttribute("y")
-                        });
-                    });
-                    markCells(elems, false, true);
-                    cells_arr.push(cells);
-                    localStorage.setItem("cells", JSON.stringify(cells_arr));
-                    document.querySelector("#prize-select").disabled = false;
-                    setMode("add-prize");
-                }
-                else if (mode == "normal" && elem.getAttribute("occupied") == "true") { // delete ship
-                    let cells_arr = JSON.parse(localStorage.getItem("cells"));
-                    let cells = [], index;
-                    let cells_obj = [];
-                    find:
-                    for (let i = 0; i < cells_arr.length; ++i) {
-                        for (let j = 0; j < cells_arr[i].length; ++j) {
-                            if (cells_arr[i][j]["x"] == elem.getAttribute("x") && cells_arr[i][j]["y"] == elem.getAttribute("y")) {
-                                cells = cells_arr[i];
-                                index = i;
-                                break find;
-                            }
-                        }
-                    }
-                    cells_arr.splice(index, 1);
-                    let new_prizes = JSON.parse(localStorage.getItem("prizes"));
-                    new_prizes.splice(index, 1);
-                    localStorage.setItem("prizes", JSON.stringify(new_prizes));
-                    localStorage.setItem("cells", JSON.stringify(cells_arr));
-                    cells.forEach((e) => {
-                        let obj = getCellByCoord(e["x"], e["y"]);
-                        cells_obj.push(obj);
-                        obj.innerHTML = "";
-                        obj.style = "background-color: var(--cell-empty)";
-                    });
-                    markCells(cells_obj, false, false);
-                }
-            });
-            elem.addEventListener("mouseover", () => {
-                let selectedX = Number(localStorage.getItem("x"));
-                let hoverX = Number(elem.getAttribute("x"));
-                let selectedY = Number(localStorage.getItem("y"));
-                let hoverY = Number(elem.getAttribute("y"));
-                if (getMode() == "select-ship" && elem.getAttribute("occupied") != "true") { // if a cell was selected
-                    elems.forEach((e) => {
-                        if ((e.getAttribute("x") != selectedX || e.getAttribute("y") != selectedY) && e.getAttribute("occupied") != "true") {
-                            e.style = "background-color: var(--cell-empty)";
-                            e.setAttribute("selected", false);
-                        }
-                    });
-                    elems = [];
-                    if (hoverY == selectedY) {
-                        let children = elem.parentElement.children;
-                        for (let i = 0; i < children.length; ++i) {
-                            let e = children[i];
-                            let thisX = Number(e.getAttribute("x"));
-                            if ((thisX > hoverX && thisX < selectedX || thisX < hoverX && thisX > selectedX) && Math.abs(selectedX - thisX) <= 3) {
-                                elems.push(e);
-                                if (e.getAttribute("occupied") == "true") {
-                                    elems = [];
-                                    break;
-                                }
-                            }
-                        }
-                        if (Math.abs(selectedX - hoverX) <= 3) {
-                            elems.push(elem);
-                        }
-                    }
-                    else if (hoverX == selectedX) {
-                        let children = document.getElementsByClassName("cell");
-                        for (let i = 0; i < children.length; ++i) {
-                            let e = children[i];
-                            let thisX = Number(e.getAttribute("x"));
-                            let thisY = Number(e.getAttribute("y"));
-                            if (thisX == hoverX && (thisY > hoverY && thisY < selectedY || thisY < hoverY && thisY > selectedY) && Math.abs(selectedY - thisY) <= 3) {
-                                elems.push(e);
-                                if (e.getAttribute("occupied") == "true") {
-                                    elems = [];
-                                    break;
-                                }
-                            }
-                        }
-                        if (Math.abs(selectedY - hoverY) <= 3) {
-                            elems.push(elem);
-                        }
-                    }
-                    elems.forEach((el) => {
-                        el.setAttribute("selected", true);
-                        el.style = "background-color: var(--cell-ship)";
-                    });
-                }
-            });
-            row.appendChild(elem);
-        }
-        field.appendChild(row);
     }
 }

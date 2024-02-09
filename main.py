@@ -194,11 +194,11 @@ def create_field():
     except:
         return jsonify({"message" : "error"}), 400
 
-@app.route("/edit_field/<int:id>", methods=["GET"])
+@app.route("/edit_field/<int:field_id>", methods=["GET"])
 @login_required
 @admin_only
 def edit_field_page(field_id):
-    field = Field.query.get(field_id)
+    field = Field.query.get(int(field_id))
     cells_data = Cell.query.filter_by(field_id=field.id)
     cells = [[None for j in range(field.size)] for i in range(field.size)]
     for cell in cells_data:
