@@ -45,7 +45,6 @@ def load_user(user_id : int):
 
 @app.route("/", methods=["GET"]) # main page
 def main_page():
-    print(current_user.__dict__)
     return render_template("index.html")
 
 @app.route("/logup", methods=["POST"]) # create new account
@@ -265,7 +264,6 @@ def edit_field():
         return jsonify({"message" : "ok"}), 200
     except:
         return jsonify({"message" : "error"}), 400
-
 
 @app.route("/delete_field", methods=["DELETE"])
 @login_required

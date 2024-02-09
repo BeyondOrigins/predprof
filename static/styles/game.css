@@ -36,7 +36,6 @@ figure {
     text-align: center;
 }
 
-
 .round_icon {
     width: 100px;
     height: 200px;
@@ -46,7 +45,7 @@ figure {
     justify-content: center;
     position: absolute;
     top: 5%;
-    left: 45%;
+    left: 47%;
 }
 
 .sea {

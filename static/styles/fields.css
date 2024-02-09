@@ -1,0 +1,22 @@
+.fields-container {
+	display: flex;
+	flex-direction: row;
+	padding: 100px;
+	padding-top: 50px;
+	z-index: 0;
+}
+
+.field-container {
+	margin: 60px;
+	height: 150px;
+	width: 150px;
+	background-color: #ffffff;
+	text-align: center;
+	z-index: 999;
+	cursor: pointer;
+}
+
+.field-preview {
+	font-size: 20;
+	margin-top: calc(50% - 15px);
+}
