@@ -11,9 +11,9 @@ function showPrize(el) {
     background.id = "bkg-fade";
     background.classList.add("modal-backdrop", "fade", "show");
     document.body.appendChild(background);
-    document.getElementsByName("prize-name")[0].value = el.getAttribute("name");
+    document.getElementsByName("prize-name")[0].innerHTML = el.getAttribute("name");
     document.querySelector(".prize-show-image").src = el.children[0].getAttribute("src");
-    document.getElementsByName("prize-desc")[0].value = el.getAttribute("desc");
+    document.getElementsByName("prize-desc")[0].innerHTML = el.getAttribute("desc");
     document.body.style = "background-color: rgb(39, 42, 49); overflow: hidden;"
     document.querySelector(".btn-close").onclick = function () {
         window.classList.remove("show");

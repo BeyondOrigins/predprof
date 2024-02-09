@@ -10,9 +10,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="{{url_for('static', filename='styles/game.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='styles/fields.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='styles/buttons.css')}}">
 </head>
 
 <body style="background-color:#272A31">
+    <button class="button-start" onclick="location.href = '/'" id="button1">На главную</button>
+    {% if is_admin %}
+    <button class="button-start" onclick="location.href = '/create_field'" id="button2">Создать поле</button>
+    {% endif %}
     <main class="f_img">
         <figure>
         </figure>
@@ -24,7 +29,7 @@
         Доступные поля
     </h1>
         {% if fields|length == 0 %}
-        <h4 class="text1">
+        <h4 class="text1" id="no-fields">
             К сожалению, вам ещё не доступно ни одно из полей
         </h4>
         {% else %}

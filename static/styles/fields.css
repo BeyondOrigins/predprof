@@ -18,5 +18,9 @@
 
 .field-preview {
 	font-size: 20;
-	margin-top: calc(50% - 15px);
+	margin-top: calc(50% - 17px);
+}
+
+#no-fields {
+	top: 60%;
 }

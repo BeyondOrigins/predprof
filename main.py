@@ -129,7 +129,6 @@ def game_post():
             prize_info = prize.__dict__
             del prize_info["_sa_instance_state"]
             body["prize"] = prize_info
-    print(body)
     return jsonify(body), 200
 
 @app.route("/create_field", methods=["GET"]) # create field page
@@ -301,7 +300,7 @@ def fields_page():
         for field in fields_all:
             if current_user.get_id() in json.loads(field.users):
                 fields.append(field.__dict__)
-    return render_template("fields.html", fields=fields)
+    return render_template("fields.html", fields=fields, is_admin=User.query.get(current_user.get_id()).is_admin)
 
 @app.route("/prizes", methods=["GET"])
 @login_required
