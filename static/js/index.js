@@ -46,9 +46,10 @@ function onLogin() {
             error.innerHTML = JSON.parse(xhr.responseText)["message"];
             error.style.color = "var(--text-error-color)";
         }
-        else {
+        else if (xhr.status == 200 && xhr.readyState == 4) {
             error.innerHTML = JSON.parse(xhr.responseText)["message"];
             error.style.color = "var(--text-success-color)";
+            location.href = "/fields";
         }
     };
 

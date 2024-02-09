@@ -1,0 +1,25 @@
+.prizes-container {
+	display: flex;
+	flex-direction: row;
+	padding: 60px;
+	padding-top: 50px;
+	z-index: 0;
+}
+
+.prize-container {
+	margin: 40px;
+	height: 150px;
+	width: 150px;
+	text-align: center;
+	z-index: 999;
+	cursor: pointer;
+}
+
+.prize-image {
+	height: 120px;
+	width: 120px;
+}
+
+.prize-show-image {
+	
+}

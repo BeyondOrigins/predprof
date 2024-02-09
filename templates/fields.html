@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -23,7 +23,6 @@
     <h1 class="sea">
         Доступные поля
     </h1>
-    <div class="fone">
         {% if fields|length == 0 %}
         <h4 class="text1">
             К сожалению, вам ещё не доступно ни одно из полей
@@ -39,9 +38,6 @@
             {% endfor %}
         </div>
         {% endif %}
-    </div>
-    <div class="info-container">
-    </div>
     <script src="{{url_for('static', filename='js/fields.js')}}"></script>
 </body>
 

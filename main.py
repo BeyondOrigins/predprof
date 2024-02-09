@@ -87,7 +87,7 @@ def game_page(field_id):
     field = Field.query.get(field_id)
     user_id = current_user.get_id()
     if field is None or user_id not in json.loads(field.users) and not is_admin():
-        return redirect("/")
+        return redirect("/fields")
     cells = Cell.query.filter_by(field_id=field_id)
     rows = []
     size = field.size
@@ -307,11 +307,12 @@ def fields_page():
 @login_required
 @user_only
 def prizes():
-    prizes_all = Prize.query.all()
+    prizes_all = Prize.query.filter_by(got_by=current_user.get_id())
     prizes = []
     for prize in prizes_all:
-        if prize.got_by == current_user.get_id():
-            prizes.append(prize.__dict__)
+        data = prize.__dict__
+        data["path"] = PRIZES_INFO[prize.type]["image"]
+        prizes.append(data)
     return render_template("prizes.html", prizes=prizes)
 
 @app.errorhandler(401)
