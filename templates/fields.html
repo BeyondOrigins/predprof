@@ -35,11 +35,17 @@
         {% else %}
         <div class="fields-container">
             {% for field in fields %}
-            <div class="field-container" data-id="{{field['id']}}" onclick="redirectToField(this)">
-                <div class="field-preview">
-                    {{field["size"]}}x{{field["size"]}}
+            <div class="field-wrapper">
+                <div class="field-container" data-id="{{field['id']}}" onclick="redirectToField(this)">
+                    <div class="field-preview">
+                        {{field["size"]}}x{{field["size"]}}
+                    </div>
                 </div>
+                {% if is_admin %}
+                <button class="button-cancel" onclick="deleteField(this)">Удалить</button>
+                {% endif %}
             </div>
+            
             {% endfor %}
         </div>
         {% endif %}

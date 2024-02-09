@@ -1,3 +1,8 @@
+:root {
+	--btn-cancel-bg-color: #ff4444;
+    --btn-cancel-fg-color: #202020;
+}
+
 .fields-container {
 	display: flex;
 	flex-direction: row;
@@ -23,4 +28,28 @@
 
 #no-fields {
 	top: 60%;
+}
+
+.button-cancel {
+    border-radius: 10px;
+    background-color: var(--btn-cancel-bg-color);
+    color: var(--btn-cancel-fg-color);
+    padding: 7px 13px;
+    font-size: 12pt;
+    border: 1px solid var(--btn-cancel-bg-color);
+    z-index: 999;
+    transition: 0.5s;
+    margin: auto;
+    cursor: pointer;
+}
+
+.button-cancel:hover {
+    background-color: #201c24;
+    color: var(--btn-cancel-bg-color);
+    transition: 0.5s;
+}
+
+.field-wrapper {
+	display: flex;
+	flex-direction: column;
 }

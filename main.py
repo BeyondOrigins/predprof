@@ -270,9 +270,12 @@ def edit_field():
 def delete_field():
     field = Field.query.get(request.get_json().get("id"))
     cells = Cell.query.filter_by(field_id=field.id)
+    ships = Ship.query.filter_by(field_id=field.id)
     if not any(not cell.shot_by for cell in cells):
         return jsonify({"message" : "Редактирование поля запрещено."}), 406
     else:
+        for cell in cells: db.session.delete(cell)
+        for ship in ships: db.session.delete(ship)
         db.session.delete(field)
         db.session.commit()
         return jsonify({"message" : "ok"}), 200
