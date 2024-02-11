@@ -40,6 +40,7 @@ window.onload = () => {
                 prizes_info.push(e["type"]);
             });
             localStorage.setItem("prizes", JSON.stringify(prizes_info));
+            localStorage.setItem("users", JSON.stringify(resp["users"]));
         }
     };
     xhr.send();
@@ -188,6 +189,7 @@ function setMode(mode) { // change edition mode
 function onFieldCreation() {
     let cells = JSON.parse(localStorage.getItem("cells"));
     let prizes = JSON.parse(localStorage.getItem("prizes"));
+    let users = JSON.parse(localStorage.getItem("users"));
     if (cells.length && prizes.length) {
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "/edit_field", true);
@@ -196,6 +198,7 @@ function onFieldCreation() {
             "id" : Number(document.querySelector(".field").getAttribute("data-id")),
             "cells": cells,
             "prizes": prizes,
+            "users" : users
         });
         xhr.onreadystatechange = () => {
             if (xhr.readyState != 4 && xhr.status != 200) { // if there is an error

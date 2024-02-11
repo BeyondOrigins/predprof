@@ -214,6 +214,7 @@ def get_field_info(field_id):
     ships = Ship.query.filter_by(field_id=field_id)
     ships_info = []
     prizes_info = []
+    users_info = json.loads(field.users)
     for ship in ships:
         cells = Cell.query.filter_by(ship_id=ship.id)
         info = [{"x" : cell.x, "y" : cell.y} for cell in cells]
@@ -223,7 +224,8 @@ def get_field_info(field_id):
         ships_info.append(info)
     info = {
         "cells" : ships_info,
-        "prizes" : prizes_info
+        "prizes" : prizes_info,
+        "users" : users_info
     }
     return jsonify(info), 200
 
@@ -235,6 +237,7 @@ def edit_field():
         data = request.get_json()
         ships_data = data.get("cells")
         prizes_data = data.get("prizes")
+        users_data = data.get("users")
         field = Field.query.get(data.get("id"))
         size = field.size
         cells = Cell.query.filter_by(field_id=field.id)
