@@ -195,7 +195,8 @@ def create_field():
 @login_required
 def edit_field_page(field_id):
     field = Field.query.get(int(field_id))
-    if not User.query.get(current_user.get_id()).is_admin or not field:
+    cells = Cell.query.filter_by(field_id=field_id)
+    if not User.query.get(current_user.get_id()).is_admin or not field or any(cell.shot_by for cell in cells):
         return redirect("/fields")
     cells = []
     for y in range(field.size):
@@ -233,7 +234,7 @@ def get_field_info(field_id):
 @login_required
 @admin_only
 def edit_field():
-    # try:
+    try:
         data = request.get_json()
         ships_data = data.get("cells")
         prizes_data = data.get("prizes")
@@ -287,8 +288,8 @@ def edit_field():
         field.users = json.dumps(data.get("users"))
         db.session.commit()
         return jsonify({"message" : "ok"}), 200
-    # except:
-    #     return jsonify({"message" : "error"}), 400
+    except:
+        return jsonify({"message" : "error"}), 400
 
 @app.route("/delete_field", methods=["DELETE"])
 @login_required
