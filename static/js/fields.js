@@ -20,3 +20,7 @@ function deleteField(el) {
 	};
 	xhr.send(body);
 }
+
+function editField(id) {
+	location.href = "/edit_field/" + id;
+}

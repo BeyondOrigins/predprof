@@ -43,6 +43,7 @@
                 </div>
                 {% if is_admin %}
                 <button class="button-cancel" onclick="deleteField(this)">Удалить</button>
+                <button class="button-start" onclick="editField({{field['id']}})">Редактировать</button>
                 {% endif %}
             </div>
             

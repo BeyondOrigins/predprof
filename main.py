@@ -191,32 +191,55 @@ def create_field():
     except:
         return jsonify({"message" : "error"}), 400
 
-@app.route("/edit_field/<int:field_id>", methods=["GET"])
+@app.route("/edit_field/<int:field_id>", methods=["GET"]) # get field edition page
 @login_required
-@admin_only
 def edit_field_page(field_id):
-    field = Field.query.get(field_id)
-    cells_data = Cell.query.filter_by(field_id=field.id)
-    cells = [[None for j in range(field.size)] for i in range(field.size)]
-    for cell in cells_data:
-        if cell.shot_by != 0:
-            return redirect("/fields")
-        cells[cell.y][cell.x] = cell.__dict__
-    return render_template("edit_field.html", cells=cells)
+    field = Field.query.get(int(field_id))
+    if not User.query.get(current_user.get_id()).is_admin or not field:
+        return redirect("/fields")
+    cells = []
+    for y in range(field.size):
+        row = []
+        for x in range(field.size):
+            row.append({"x" : x, "y" : y})
+        cells.append(row)
+    return render_template("edit_field.html", field=cells, id=field.id)
+
+@app.route("/get_info/<int:field_id>", methods=["GET"]) # get field info
+@login_required
+def get_field_info(field_id):
+    field = Field.query.get(int(field_id))
+    if not User.query.get(current_user.get_id()).is_admin or not field:
+        return jsonify({"message" : "error"}), 406
+    ships = Ship.query.filter_by(field_id=field_id)
+    ships_info = []
+    prizes_info = []
+    for ship in ships:
+        cells = Cell.query.filter_by(ship_id=ship.id)
+        info = [{"x" : cell.x, "y" : cell.y} for cell in cells]
+        prize_type = Prize.query.get(ship.prize_id).type
+        prize = {"image" : PRIZES_INFO[prize_type]["image"], "type" : prize_type}
+        prizes_info.append(prize)
+        ships_info.append(info)
+    info = {
+        "cells" : ships_info,
+        "prizes" : prizes_info
+    }
+    return jsonify(info), 200
 
 @app.route("/edit_field", methods=["POST"])
 @login_required
 @admin_only
 def edit_field():
-    try:
+    # try:
         data = request.get_json()
         ships_data = data.get("cells")
         prizes_data = data.get("prizes")
-        size = int(data.get("size"))
         field = Field.query.get(data.get("id"))
+        size = field.size
         cells = Cell.query.filter_by(field_id=field.id)
         ships = Ship.query.filter_by(field_id=field.id)
-        prizes = Prize.query.filter_by(field_id=field.id)
+        prizes = [Prize.query.get(ship.prize_id) for ship in ships]
         for ship in ships:
             db.session.delete(ship)
         for prize in prizes:
@@ -261,8 +284,8 @@ def edit_field():
         field.users = json.dumps(data.get("users"))
         db.session.commit()
         return jsonify({"message" : "ok"}), 200
-    except:
-        return jsonify({"message" : "error"}), 400
+    # except:
+    #     return jsonify({"message" : "error"}), 400
 
 @app.route("/delete_field", methods=["DELETE"])
 @login_required

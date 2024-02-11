@@ -6,13 +6,14 @@
 .fields-container {
 	display: flex;
 	flex-direction: row;
-	padding: 100px;
+	flex-wrap: wrap;
+	padding: 80px;
 	padding-top: 50px;
 	z-index: 0;
 }
 
 .field-container {
-	margin: 60px;
+	margin: 20px;
 	height: 150px;
 	width: 150px;
 	background-color: #ffffff;
@@ -23,7 +24,7 @@
 
 .field-preview {
 	font-size: 20;
-	margin-top: calc(50% - 17px);
+	margin-top: calc(50% - 12px);
 }
 
 #no-fields {
@@ -41,6 +42,7 @@
     transition: 0.5s;
     margin: auto;
     cursor: pointer;
+    margin: 10px;
 }
 
 .button-cancel:hover {

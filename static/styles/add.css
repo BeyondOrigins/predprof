@@ -58,7 +58,7 @@ figure {
     justify-content: center;
     position: absolute;
     top: 5%;
-    left: 45%;
+    margin-left: calc(50% - 50px);
 }
 
 .sea {
@@ -184,6 +184,7 @@ figure {
     margin: 0px auto;
     margin-top: 1%;
     text-align: center;
+    display: flex;
 }
 
 .disabled {

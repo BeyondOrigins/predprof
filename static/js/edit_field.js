@@ -1,4 +1,5 @@
-import { modes, prizes } from "./config.js"
+let prizes = { "promo1000": 1000, "promo2000": 2000, "promo3000": 3000 };
+let modes = ["normal", "add-ship", "select-ship", "ship-ready", "add-prize"];
 let elems = [];
 let selected;
 
@@ -9,6 +10,40 @@ window.onload = () => {
     localStorage.setItem("users", JSON.stringify({}));
     localStorage.setItem("x", "");
     localStorage.setItem("y", "");
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "/get_info/" + document.querySelector(".field").getAttribute("data-id"), true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = () => { // to mark ships already placed
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            let resp = JSON.parse(xhr.responseText);
+            let ships = [];
+            let prizes = resp["prizes"];
+            let prizes_info = [];
+            localStorage.setItem("cells", JSON.stringify(resp["cells"]));
+            resp["cells"].forEach((e) => {
+                let ship = [];
+                e.forEach((cell) => {
+                    let new_cell = getCellByCoord(cell["x"], cell["y"]);
+                    new_cell.style = "background-color: var(--cell-ship)";
+                    ship.push(new_cell);
+                });
+                ships.push(ship);
+            });
+            for (let i = 0; i < ships.length; ++i) {
+                markCells(ships[i], false, true);
+                let img = new Image(39, 39);
+                img.src = prizes[i]["image"];
+                ships[i][0].appendChild(img);
+            }
+            prizes.forEach((e) =>{
+                prizes_info.push(e["type"]);
+            });
+            localStorage.setItem("prizes", JSON.stringify(prizes_info));
+        }
+    };
+    xhr.send();
+
     Array.prototype.forEach.call(document.getElementsByClassName("cell"), (elem) => {
         elem.addEventListener("click", () => { // on cell click
             let mode = getMode();
@@ -119,7 +154,7 @@ window.onload = () => {
                     el.style = "background-color: var(--cell-ship)";
                 });
             }
-        });
+        });   
     });
 };
 
@@ -153,17 +188,14 @@ function setMode(mode) { // change edition mode
 function onFieldCreation() {
     let cells = JSON.parse(localStorage.getItem("cells"));
     let prizes = JSON.parse(localStorage.getItem("prizes"));
-    let size = Number(document.getElementById("select-size").value);
-    let users = JSON.parse(localStorage.getItem("users"));
-    if (cells.length && prizes.length && size) {
+    if (cells.length && prizes.length) {
         let xhr = new XMLHttpRequest();
-        xhr.open("POST", "/create_field", true);
+        xhr.open("POST", "/edit_field", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         let body = JSON.stringify({
-            "size": size,
+            "id" : Number(document.querySelector(".field").getAttribute("data-id")),
             "cells": cells,
             "prizes": prizes,
-            "users": users
         });
         xhr.onreadystatechange = () => {
             if (xhr.readyState != 4 && xhr.status != 200) { // if there is an error
@@ -331,7 +363,5 @@ function getMode() { // get edition mode
 }
 
 function onCreateButtonClick() {
-    if (document.querySelector("#select-size").value != 0) {
-        setMode("add-ship");
-    }
+    setMode("add-ship");
 }

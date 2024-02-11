@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{{url_for('static', filename='styles/bootstrap.css')}}" rel="stylesheet">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
     <link rel="stylesheet" href="{{url_for('static', filename='styles/add.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='styles/buttons.css')}}">
     <title>Отредактировать поле</title>
     <link rel="apple-touch-icon" sizes="180x180"
         href="{{url_for('static', filename='styles/icon/apple-touch-icon.png')}}">
@@ -21,6 +21,8 @@
 </head>
 
 <body style="background-color:#272A31">
+    <button class="button-start" onclick="location.href = '/'" id="button1">На главную</button>
+    <button class="button-start" onclick="location.href = '/fields'" id="button2">К полям</button>
     <main class="f_img">
         <figure>
         </figure>
@@ -92,23 +94,12 @@
         </div>
     </div>
     <div class="fone">
-        <table class="field">
+        <table class="field" data-id="{{id}}">
             {% for row in field %}
             <tr class="field__row">
                 {% for cell in row %}
-                {% for cell in row %}
-                {% if cell["shot_by"] == 0 %}
-                <td class="cell" x="{{cell['x']}}" y="{{cell['y']}}">
-                </td>
-                {% else %}
-                {% if cell["ship_id"] == 0 %}
                 <td class="cell" x="{{cell['x']}}" y="{{cell['y']}}" style="background-color: var(--cell-empty);">
                 </td>
-                {% else %}
-                <td class="cell" x="{{cell['x']}}" y="{{cell['y']}}" style="background-color: var(--cell-ship);">
-                </td>
-                {% endif %}
-                {% endif %}
                 {% endfor %}
             </tr>
             {% endfor %}
@@ -124,7 +115,7 @@
         </select>
     </div>
 
-    <script src="{{url_for('static', filename='js/create_field.js')}}"></script>
+    <script src="{{url_for('static', filename='js/edit_field.js')}}"></script>
 </body>
 
 </html>
