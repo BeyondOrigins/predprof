@@ -661,9 +661,11 @@ progress{
     padding-left:calc(var(--bs-gutter-x) * .5);
     margin-top:var(--bs-gutter-y)
 }
-.col{
-    flex:1 0 0%
+.col {
+    flex: 1 0 0%;
+    text-align: center;
 }
+
 .row-cols-auto>*{
     flex:0 0 auto;
     width:auto

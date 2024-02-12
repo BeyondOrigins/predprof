@@ -4,6 +4,7 @@
 	padding: 60px;
 	padding-top: 50px;
 	z-index: 0;
+	flex-wrap: wrap;
 }
 
 .prize-container {
@@ -27,4 +28,11 @@
 
 #no-prizes {
 	top: 60%;
+}
+
+.filter-label {
+	color: #ffffff;
+	font-size: 25pt;
+	margin: 30px auto;
+	text-align: center;
 }

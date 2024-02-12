@@ -25,20 +25,34 @@
     <h1 class="sea">
         Ваши призы
     </h1>
-    {% if prizes|length == 0 %}
-    <h4 class="text1" id="no-prizes">
-        К сожалению, вы не выиграли ни одного приза :(
-    </h4>
-    {% else %}
-    <div class="prizes-container">
-        {% for prize in prizes %}
-        <div class="prize-container" data-id="{{prize['id']}}" onclick="showPrize(this)" 
-            name="{{prize['name']}}" desc="{{prize['desc']}}">
-            <img class="prize-image" src="{{prize['path']}}">
+    {% if not is_admin %}
+        {% if prizes|length == 0 %}
+        <h4 class="text1" id="no-prizes">
+            К сожалению, вы не выиграли ни одного приза :(
+        </h4>
+        {% else %}
+        <div class="prizes-container">
+            {% for prize in prizes %}
+            <div class="prize-container" name="{{prize['name']}}" desc="{{prize['desc']}}">
+                <img class="prize-image" src="{{prize['path']}}">
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
+        {% endif %}
+    {% else %}
+        <div class="row px-5">
+            <div class="col">
+                <select class="form-select" aria-label="Пример выбора по умолчанию" onchange="filterPrizes(this)"
+                id="select-size">
+                    <option selected value="">Фильтрация призов</option>
+                    <option value="field">По полю</option>
+                    <option value="user">По принадлежности</option>
+                </select>
+            </div>
+        </div>
     {% endif %}
+    <div class="container">
+    </div>
     <div class="modal fade" id="exampleModalToggle" aria-labelledby="exampleModalToggleLabel" tabindex="-1"
         style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

@@ -31,14 +31,6 @@ def admin_only(f):
         return redirect("/")
     return decorated_function
 
-def user_only(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not is_admin(): 
-            return f(*args, *kwargs)
-        return redirect("/")
-    return decorated_function
-
 @login_manager.user_loader
 def load_user(user_id : int):
     return UserLogin().fromDB(user_id, User)
@@ -330,19 +322,50 @@ def fields_page():
         for field in fields_all:
             if current_user.get_id() in json.loads(field.users):
                 fields.append(field.__dict__)
-    return render_template("fields.html", fields=fields, is_admin=User.query.get(current_user.get_id()).is_admin)
+    return render_template("fields.html", fields=fields, 
+        is_admin=User.query.get(current_user.get_id()).is_admin)
 
 @app.route("/prizes", methods=["GET"])
 @login_required
-@user_only
-def prizes():
+def prizes_page():
     prizes_all = Prize.query.filter_by(got_by=current_user.get_id())
     prizes = []
     for prize in prizes_all:
         data = prize.__dict__
         data["path"] = PRIZES_INFO[prize.type]["image"]
         prizes.append(data)
-    return render_template("prizes.html", prizes=prizes)
+    return render_template("prizes.html", prizes=prizes, 
+        is_admin=User.query.get(current_user.get_id()).is_admin)
+
+@app.route("/prizes", methods=["POST"])
+@login_required
+@admin_only
+def filter_prizes():
+    param = request.get_json().get("param")
+    if param not in FILTERS:
+        return jsonify({"message" : "Такого фильтра нет"}), 400
+    else:
+        prizes = {}
+        prizes_data = Prize.query.all()
+        if param == "field":
+            for prize in prizes_data:
+                prize_dict = prize.__dict__
+                del prize_dict["_sa_instance_state"]
+                prize_dict["path"] = PRIZES_INFO[prize.type]["image"]
+                field_id = Ship.query.filter_by(prize_id=prize.id)[0].field_id
+                try: prizes.get(field_id).append(prize_dict)
+                except: prizes[field_id] = [prize_dict]
+        elif param == "user":
+            for prize in prizes_data:
+                prize_dict = prize.__dict__
+                del prize_dict["_sa_instance_state"]
+                prize_dict["path"] = PRIZES_INFO[prize.type]["image"]
+                got_by = prize.got_by
+                if got_by: label = f"{User.query.get(got_by).login} (id : {got_by})"
+                else: label = "Призы, которые ещё никто не получил"
+                try: prizes.get(label).append(prize_dict)
+                except: prizes[label] = [prize_dict]
+        return jsonify(prizes), 200
 
 @app.errorhandler(401)
 def auth_error(error):
