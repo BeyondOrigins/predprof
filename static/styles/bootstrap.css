@@ -2968,7 +2968,7 @@ textarea.form-control-lg{
     --bs-btn-border-radius:var(--bs-border-radius-sm)
 }
 .fade{
-    transition:opacity linear
+    
 }
 @media (prefers-reduced-motion:reduce){
     .fade{
