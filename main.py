@@ -328,14 +328,17 @@ def fields_page():
 @app.route("/prizes", methods=["GET"])
 @login_required
 def prizes_page():
-    prizes_all = Prize.query.filter_by(got_by=current_user.get_id())
-    prizes = []
-    for prize in prizes_all:
-        data = prize.__dict__
-        data["path"] = PRIZES_INFO[prize.type]["image"]
-        prizes.append(data)
-    return render_template("prizes.html", prizes=prizes, 
-        is_admin=User.query.get(current_user.get_id()).is_admin)
+    try:
+        prizes_all = Prize.query.filter_by(got_by=current_user.get_id())
+        prizes = []
+        for prize in prizes_all:
+            data = prize.__dict__
+            data["path"] = PRIZES_INFO[prize.type]["image"]
+            prizes.append(data)
+        return render_template("prizes.html", prizes=prizes, 
+            is_admin=User.query.get(current_user.get_id()).is_admin)
+    except:
+        return redirect("/")
 
 @app.route("/prizes", methods=["POST"])
 @login_required
