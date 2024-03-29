@@ -316,16 +316,19 @@ def check_user():
 @app.route("/fields", methods=["GET"])
 @login_required
 def fields_page():
-    fields_all = Field.query.all()
-    fields = []
-    if User.query.get(current_user.get_id()).is_admin:
-        fields = fields_all
-    else:
-        for field in fields_all:
-            if current_user.get_id() in json.loads(field.users):
-                fields.append(field.__dict__)
-    return render_template("fields.html", fields=fields, 
-        is_admin=User.query.get(current_user.get_id()).is_admin)
+    try:
+        fields_all = Field.query.all()
+        fields = []
+        if User.query.get(current_user.get_id()).is_admin:
+            fields = fields_all
+        else:
+            for field in fields_all:
+                if current_user.get_id() in json.loads(field.users):
+                    fields.append(field.__dict__)
+        return render_template("fields.html", fields=fields, 
+            is_admin=User.query.get(current_user.get_id()).is_admin)
+    except:
+        return redirect("/")
 
 @app.route("/prizes", methods=["GET"])
 @login_required
