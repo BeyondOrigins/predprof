@@ -290,11 +290,13 @@ def delete_field():
     field = Field.query.get(request.get_json().get("id"))
     cells = Cell.query.filter_by(field_id=field.id)
     ships = Ship.query.filter_by(field_id=field.id)
+    prizes = [ship.prize for ship in ships]
     if any(cell.shot_by for cell in cells):
         return jsonify({"message" : "Удаление поля запрещено."}), 406
     else:
         for cell in cells: db.session.delete(cell)
         for ship in ships: db.session.delete(ship)
+        for prize in prizes: db.session.delete(prize)
         db.session.delete(field)
         db.session.commit()
         return jsonify({"message" : "ok"}), 200
@@ -338,8 +340,7 @@ def prizes_page():
         return render_template("prizes.html", prizes=prizes, 
             is_admin=User.query.get(current_user.get_id()).is_admin)
     except:
-        return redirect("/")
-
+        return redirect
 @app.route("/prizes", methods=["POST"])
 @login_required
 @admin_only
