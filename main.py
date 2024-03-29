@@ -340,7 +340,7 @@ def prizes_page():
         return render_template("prizes.html", prizes=prizes, 
             is_admin=User.query.get(current_user.get_id()).is_admin)
     except:
-        return redirect
+        return redirect("/")
 @app.route("/prizes", methods=["POST"])
 @login_required
 @admin_only
